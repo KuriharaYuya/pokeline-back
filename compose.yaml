@@ -5,24 +5,23 @@ services:
     volumes:
       - .:/app
     tty: true
-    command: /bin/sh -c "bundle exec rails s -p 3001 -b '0.0.0.0'"
+    command: /bin/sh -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3001 -b '0.0.0.0'"
     ports:
      - 3001:3001
-  # db:
-  #   image: mysql:latest
-  #   platform: linux/arm64/v8
-  #   restart: always
-  #   hostname: my-mysql
-  #   environment:
-  #     MYSQL_USER: mysql_user
-  #     MYSQL_PASSWORD: mysql_user
-  #     MYSQL_DATABASE: sample_db
-  #     MYSQL_ROOT_PASSWORD: mysql_user
-  #   ports:
-  #     - 3306:3306
-  #   expose:
-  #     - '3306'
-  #   volumes:
-  #     - ./db/mysql_init:/docker-entrypoint-initdb.d
-  #     - ./db/mysql_data:/var/lib/mysql
-  #   tty: true
+  db:
+    image: mysql:latest
+    platform: linux/arm64/v8
+    restart: always
+    hostname: my-mysql
+    environment:
+      MYSQL_USER: mysql_user
+      MYSQL_PASSWORD: mysql_user
+      MYSQL_DATABASE: sample_db
+      MYSQL_ROOT_PASSWORD: mysql_user
+    ports:
+      - 3306:3306
+    expose:
+      - '3306'
+    volumes:
+      - ./db/mysql_init:/docker-entrypoint-initdb.d
+      - ./db/mysql_data:/var/lib/mysql
