@@ -27,3 +27,6 @@
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
+/db/mysql_data
+/db/mysql_data
+/.env
