@@ -20,6 +20,7 @@ class Api::V1::SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_equal @valid_user.name, json["user"]["name"]
     assert_equal @valid_user.email, json["user"]["email"]
     assert_equal @valid_user.picture, json["user"]["picture"]
+    assert_equal @valid_user.id, session["user_id"]
   end
 
   test "should return not found with invalid access token" do
@@ -31,6 +32,6 @@ class Api::V1::SessionsControllerTest < ActionDispatch::IntegrationTest
   test "should destroy session" do
     delete api_v1_sessions_path
     assert_response :ok
-    assert_nil cookies["user_id"]
+    assert_nil session["user_id"]
   end
 end
