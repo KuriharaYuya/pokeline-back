@@ -12,6 +12,7 @@ module Api
     def destroy
     reset_session
     cookies.delete(:user_id, max_age: 0)
+    cookies.delete(:logged_in, max_age: 0)
     render status: :ok
     end
 

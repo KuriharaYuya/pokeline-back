@@ -13,6 +13,7 @@ module SessionHelper
         httponly: true,
         secure: true,
       }
+      cookies["logged_in"] = true
       return true
     end
   end
