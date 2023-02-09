@@ -10,10 +10,13 @@ module SessionHelper
       cookies["user_id"] = {
         value: user.id,
         max_age: 3600 * 24 * 7,
-        httponly: true,
         secure: true,
       }
-      cookies["logged_in"] = true
+      cookies["logged_in"] = {
+        value: true,
+        max_age: 3600 * 24 * 7,
+        secure: true,
+      }
       return true
     end
   end
