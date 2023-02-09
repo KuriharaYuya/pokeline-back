@@ -6,8 +6,7 @@ module Api
     def create
     user_info = JWT.decode(session_params[:access_token], nil, false).first
     user = User.find_by(id: user_info["user_id"])
-    login(user)
-    render json: { user: }, status: :ok
+    render json: { user: }, status: :ok if login(user)
     end
 
     def destroy
