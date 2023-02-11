@@ -10,7 +10,7 @@ module Api
         end
         user_info = JWT.decode(user_params[:access_token], nil, false).first
         name, email, user_id, picture = user_info.values_at("name", "email", "user_id", "picture")
-        user = User.new(name:, email:, id: user_id, picture:)
+        user = User.new(name:, email:, id: user_id, picture: )
         user.save
         login(user)
         render json: { user: }, status: :ok

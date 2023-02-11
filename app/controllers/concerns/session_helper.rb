@@ -20,4 +20,14 @@ module SessionHelper
       return true
     end
   end
+
+  def current_user
+    @current_user ||= User.find_by(id: session[:user_id])
+  end
+
+  def authenticate_user
+    if session[:user_id] != cookies[:user_id]
+      render json: { message: "Unauthorized" }, status: :unauthorized
+    end
+  end
 end
