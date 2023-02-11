@@ -10,7 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_07_164319) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_11_081037) do
+  create_table "posts", id: :string, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "pokemon_name"
+    t.string "version_name"
+    t.string "pokemon_image"
+    t.string "title"
+    t.text "content"
+    t.string "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "fk_rails_5b5ddfd518"
+  end
+
   create_table "users", id: :string, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
     t.string "picture"
@@ -19,4 +31,5 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_07_164319) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "posts", "users", on_delete: :cascade
 end
