@@ -26,7 +26,7 @@ class Api::V1::SessionsControllerTest < ActionDispatch::IntegrationTest
   test "should return not found with invalid access token" do
     access_token = JWT.encode({ user_id: 123 }, nil, "none")
     post api_v1_sessions_path, params: { session: { access_token: access_token } }
-    assert_response :not_found
+    assert_response :unauthorized
   end
 
   test "should destroy session" do
