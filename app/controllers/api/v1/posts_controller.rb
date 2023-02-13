@@ -6,7 +6,11 @@ module Api
 
       def create
         post = current_user.posts.build(posts_params)
-        render status: :ok if post.save!
+        if post.save
+          render status: :ok 
+        else
+          render status: :unprocessable_entity
+        end
       end
 
       def index
