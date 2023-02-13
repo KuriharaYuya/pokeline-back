@@ -10,7 +10,7 @@ module Api
       end
 
       def index
-        posts = Post.includes(:user) 
+        posts = Post.includes(:user).sort_by(&:created_at).reverse
         posts = posts.map do |post|
           user = post.user
           {
