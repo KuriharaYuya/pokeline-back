@@ -6,7 +6,11 @@ module Api
     def create
     user_info = JWT.decode(session_params[:access_token], nil, false).first
     user = User.find_by(id: user_info["user_id"])
-    render json: { user: }, status: :ok if login(user)
+    if user.present?
+      render json: { user: }, status: :ok if login(user)
+    else
+      render json: { message: "ユーザーが存在しません" }, status: :unauthorized
+    end
     end
 
     def destroy
