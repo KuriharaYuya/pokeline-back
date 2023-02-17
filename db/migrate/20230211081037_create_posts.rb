@@ -7,6 +7,7 @@ class CreatePosts < ActiveRecord::Migration[7.0]
       t.string :pokemon_image
       t.string :title
       t.text :content
+      t.text :generation_name
       t.string :user_id
 
       t.timestamps

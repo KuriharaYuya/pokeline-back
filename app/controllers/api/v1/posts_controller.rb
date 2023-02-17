@@ -7,7 +7,7 @@ module Api
       def create
         post = current_user.posts.build(posts_params)
         if post.save
-          render status: :ok 
+          render status: :ok
         else
           render status: :unprocessable_entity
         end
@@ -18,28 +18,54 @@ module Api
         posts = posts.map do |post|
           user = post.user
           {
+            id: post.id,
             pokemon_name: post.pokemon_name,
             version_name: post.version_name,
+            generation_name: post.generation_name,
             pokemon_image: post.pokemon_image,
             title: post.title,
             content: post.content,
-            user_img: user.picture
+            user_img: user.picture,
+            user_id: user.id,
+            user_name: user.name
           }
         end
-        render json: { posts: },status: :ok
+        render json: { posts: }, status: :ok
       end
 
       def update
-        post = Post.find(posts_params[:id])
+        post = Post.includes(:user).find(params[:id])
         post.update(posts_params)
         post.save
-        render json: { post: },status: :ok
+        user = current_user
+        post = {
+          id: post.id,
+          pokemon_name: post.pokemon_name,
+          version_name: post.version_name,
+          generation_name: post.generation_name,
+          pokemon_image: post.pokemon_image,
+          title: post.title,
+          content: post.content,
+          user_img: user.picture,
+          user_id: user.id,
+          user_name: user.name
+        }
+        render json: { post: }, status: :ok
+      end
+
+      def destroy
+        post = Post.find(params[:id])
+        if current_user == post.user
+          render status: :ok if post.destroy!
+        else
+          render status: :unauthorized
+        end
       end
 
       private
 
       def posts_params
-        params.require(:posts).permit(:pokemon_name, :version_name, :pokemon_image, :title, :content, :id)
+        params.require(:posts).permit(:pokemon_name, :version_name, :pokemon_image, :title, :content, :id, :generation_name)
       end
     end
   end
