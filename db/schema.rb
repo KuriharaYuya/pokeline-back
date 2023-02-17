@@ -17,6 +17,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_11_081037) do
     t.string "pokemon_image"
     t.string "title"
     t.text "content"
+    t.text "generation_name"
     t.string "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
