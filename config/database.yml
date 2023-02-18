@@ -52,4 +52,6 @@ production:
   <<: *default
   database: app_production
   username: app
-  password: <%= ENV["APP_DATABASE_PASSWORD"] %>
+  password: mysql_user
+  socket: /var/lib/mysql/mysql.sock
+  encoding: utf8
