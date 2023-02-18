@@ -4,7 +4,7 @@ module SessionHelper
   def login(user)
     if user.nil?
       render json: {}, status: :not_found
-      return false
+      false
     else
       session[:user_id] = user.id
       cookies["user_id"] = {
@@ -17,7 +17,7 @@ module SessionHelper
         max_age: 3600 * 24 * 7,
         secure: true,
       }
-      return true
+      true
     end
   end
 

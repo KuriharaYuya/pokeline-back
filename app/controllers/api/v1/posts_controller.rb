@@ -14,7 +14,7 @@ module Api
       end
 
       def index
-        posts = Post.includes(:user).sort_by(&:created_at).reverse
+        posts = Post.includes(:user, :comments).sort_by(&:created_at).reverse
         posts = posts.map do |post|
           user = post.user
           {
@@ -27,7 +27,19 @@ module Api
             content: post.content,
             user_img: user.picture,
             user_id: user.id,
-            user_name: user.name
+            user_name: user.name,
+            # commentにはuser_id,user_name,user_imgがないので、mapでキーに値を入れる
+            comments: post.comments.includes(:user).sort_by(&:created_at).map do |comment|
+              user = comment.user
+              {
+                id: comment.id,
+                content: comment.content,
+                created_at: comment.created_at,
+                user_id: user.id,
+                user_name: user.name,
+                user_img: user.picture
+              }
+            end
           }
         end
         render json: { posts: }, status: :ok

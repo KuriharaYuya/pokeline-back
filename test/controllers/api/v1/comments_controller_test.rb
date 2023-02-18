@@ -44,6 +44,30 @@ module Api
         assert_equal test_txt, json["comment"]["content"]
         assert_equal @valid_user2.id, json["comment"]["user_id"]
       end
+
+      test "delete comment" do
+        # create comment
+        post api_v1_comments_path, params: { comment: { post_id: Post.all[0].id, content: "test_comment" } }
+
+        tgt_comment = @valid_user2.comments.first
+        assert_difference "Comment.count", -1 do
+          delete api_v1_comment_path(tgt_comment.id)
+        end
+        assert_response :ok
+      end
+
+      test "trying to delete other user's comment" do
+        # comment is created by user1
+        comment = Comment.new(post_id: Post.all[0].id, user_id: @valid_user1.id, content: "test_comment")
+        comment.save
+
+        # user2 tries to delete user1's comment
+        tgt_comment = @valid_user1.comments.first
+        assert_no_difference "Comment.count" do
+          delete api_v1_comment_path(tgt_comment.id)
+        end
+        assert_response :unauthorized
+      end
     end
   end
 end

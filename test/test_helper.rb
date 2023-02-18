@@ -10,4 +10,10 @@ class ActiveSupport::TestCase
   fixtures :all
 
   # Add more helper methods to be used by all tests here...
+
+  def sign_in_as(user)
+    token = JWT.encode(user, nil, "none")
+    post api_v1_sessions_path, params: { session: { access_token: token } }
+    cookies[:user_id] = user.id
+  end
 end
