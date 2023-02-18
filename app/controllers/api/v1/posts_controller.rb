@@ -17,6 +17,7 @@ module Api
         posts = Post.includes(:user, :comments).sort_by(&:created_at).reverse
         posts = posts.map do |post|
           user = post.user
+          comments = Kaminari.paginate_array(post.comments.includes(:user).sort_by(&:created_at)).page(1).per(10)
           {
             id: post.id,
             pokemon_name: post.pokemon_name,
@@ -28,8 +29,8 @@ module Api
             user_img: user.picture,
             user_id: user.id,
             user_name: user.name,
-            # commentにはuser_id,user_name,user_imgがないので、mapでキーに値を入れる
-            comments: post.comments.includes(:user).sort_by(&:created_at).map do |comment|
+
+            comments: comments.map do |comment|
               user = comment.user
               {
                 id: comment.id,
