@@ -4,6 +4,22 @@ module Api
       include SessionHelper
       before_action :authenticate_user
 
+      def index
+        comments = Comment.includes(:user).where(post_id: params[:post_id]).page(params[:page].to_i + 1).per(10)
+        comments = comments.map do |comment|
+          user = comment.user
+          {
+            id: comment.id,
+            content: comment.content,
+            created_at: comment.created_at,
+            user_id: user.id,
+            user_name: user.name,
+            user_img: user.picture
+          }
+        end
+        render json: { comments: }, status: :ok
+      end
+
       def create
         comment = current_user.comments.build(comments_params)
         if comment.save

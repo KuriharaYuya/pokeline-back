@@ -68,6 +68,11 @@ module Api
         end
         assert_response :unauthorized
       end
+
+      test "get comments" do
+        get api_v1_comments_path(post_id: Post.all[0].id)
+        assert_response :ok
+      end
     end
   end
 end

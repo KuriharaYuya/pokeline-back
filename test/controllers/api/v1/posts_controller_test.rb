@@ -61,6 +61,13 @@ module Api
         assert_equal json["post"]["title"], test_title
         assert_equal json["post"]["content"], test_content
       end
+
+      test "get posts" do
+        get api_v1_posts_path
+        assert_response :ok
+        response_json = JSON.parse(response.body)
+        assert_equal response_json["posts"].length, Post.all.length
+      end
     end
   end
 end
