@@ -7,6 +7,7 @@ Rails.application.routes.draw do
       delete "/sessions", to: "sessions#destroy"
 
       resources :posts
+      resources :comments
     end
   end
 end
