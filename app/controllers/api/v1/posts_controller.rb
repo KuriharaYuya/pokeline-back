@@ -14,10 +14,24 @@ module Api
       end
 
       def index
-        posts = Post.includes(:user, :comments).sort_by(&:created_at).reverse
+        # ぺージネーションの実装
+        posts = Kaminari.paginate_array(Post.includes(:user, :comments).sort_by(&:created_at).reverse).page(params[:page].to_i + 1).per(10)
         posts = posts.map do |post|
           user = post.user
+          # commentに対して、返却数を10に制限する
+          # 一度ここで、コメントを取得して、その後に、mapで返却する
           comments = Kaminari.paginate_array(post.comments.includes(:user).sort_by(&:created_at)).page(1).per(10)
+          comments = comments.map do |comment|
+            user = comment.user
+            {
+              id: comment.id,
+              content: comment.content,
+              created_at: comment.created_at,
+              user_id: user.id,
+              user_name: user.name,
+              user_img: user.picture
+            }
+          end
           {
             id: post.id,
             pokemon_name: post.pokemon_name,
@@ -29,18 +43,7 @@ module Api
             user_img: user.picture,
             user_id: user.id,
             user_name: user.name,
-
-            comments: comments.map do |comment|
-              user = comment.user
-              {
-                id: comment.id,
-                content: comment.content,
-                created_at: comment.created_at,
-                user_id: user.id,
-                user_name: user.name,
-                user_img: user.picture
-              }
-            end
+            comments:,
           }
         end
         render json: { posts: }, status: :ok
