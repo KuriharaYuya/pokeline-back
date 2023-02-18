@@ -7,6 +7,8 @@ ruby "3.1.2"
 gem "rails", "~> 7.0.4", ">= 7.0.4.2"
 
 gem "kaminari"
+
+gem "faker"
 # Use mysql as the database for Active Record
 gem "mysql2", "~> 0.5"
 
