@@ -44,6 +44,7 @@ module Api
             user_id: user.id,
             user_name: user.name,
             comments:,
+            comments_length: post.comments.length
           }
         end
         render json: { posts: }, status: :ok
