@@ -24,3 +24,7 @@ services:
       - '3306'
     volumes:
       - ./db/mysql_data:/var/lib/mysql
+networks:
+  default:
+    external:
+      name: pokeline-network
