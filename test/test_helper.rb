@@ -12,8 +12,18 @@ class ActiveSupport::TestCase
   # Add more helper methods to be used by all tests here...
 
   def sign_in_as(user)
-    token = JWT.encode(user, nil, "none")
+    # userをhashに変換
+    hash = user.attributes
+    # idというキーをuser_idに変換
+    updated_hash = hash.transform_keys { |key| key == "id" ? "user_id" : key }
+    token = JWT.encode(updated_hash, nil, "none")
     post api_v1_sessions_path, params: { session: { access_token: token } }
     cookies[:user_id] = user.id
+  end
+
+  def create_user(user_obj)
+    token = JWT.encode(user_obj, nil, "none")
+    post api_v1_users_path, params: { user: { access_token: token } }
+    JSON.parse(response.body)["user"]["id"]
   end
 end

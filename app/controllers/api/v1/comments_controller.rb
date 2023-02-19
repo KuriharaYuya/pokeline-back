@@ -23,6 +23,10 @@ module Api
       def create
         comment = current_user.comments.build(comments_params)
         if comment.save
+          post = Post.find(comments_params["post_id"])
+          if post.user_id != current_user.id
+            Notification.new(visitor_id: comment.user_id, visited_id: post.user_id, post_id: post.id, comment_id: comment.id, action: "comment").save
+          end
           comment = Comment.includes(:user).find(comment.id)
           user = comment.user
           comment = {

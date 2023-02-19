@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_17_111120) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_19_144401) do
   create_table "comments", id: :string, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "post_id", null: false
     t.string "user_id", null: false
@@ -19,6 +19,17 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_17_111120) do
     t.datetime "updated_at", null: false
     t.index ["post_id"], name: "fk_rails_2fd19c0db7"
     t.index ["user_id"], name: "fk_rails_03de2dc08c"
+  end
+
+  create_table "notifications", id: :string, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "visitor_id", null: false
+    t.string "visited_id", null: false
+    t.string "post_id", null: false
+    t.string "comment_id"
+    t.string "action", null: false
+    t.boolean "checked", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "posts", id: :string, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
