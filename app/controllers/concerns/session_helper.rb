@@ -11,12 +11,14 @@ module SessionHelper
         value: user.id,
         max_age: 3600 * 24 * 7,
         same_site: :lax,
+        domain: "poke-line.vercel.app",
       # secure: true,
       }
       cookies["logged_in"] = {
         value: true,
         max_age: 3600 * 24 * 7,
         same_site: :lax,
+        domain: "poke-line.vercel.app",
       # secure: true,
       }
       true
