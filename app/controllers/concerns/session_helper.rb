@@ -11,11 +11,13 @@ module SessionHelper
         value: user.id,
         max_age: 3600 * 24 * 7,
         secure: true,
+        same_site: Rails.env.production? ? "strict" : "lax",
       }
       cookies["logged_in"] = {
         value: true,
         max_age: 3600 * 24 * 7,
         secure: true,
+        same_site: Rails.env.production? ? "strict" : "lax",
       }
       true
     end
