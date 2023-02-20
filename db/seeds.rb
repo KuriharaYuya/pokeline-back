@@ -1,4 +1,11 @@
 require "faker"
+# userが一人もいなければ例外を出す
+if User.all.empty?
+  raise "Userが一人もいません"
+end
+if Post.all.empty?
+  raise "Postが一つもありません"
+end
 
 # userを10人作成
 10.times do |n|
@@ -26,4 +33,11 @@ sample_post = Post.all[0]
     comment = comment_user.comments.build(post_id: post.id, content: Faker::Lorem.sentence)
     comment.save
   end
+end
+
+# User.all[0]に対して通知を作成
+9.times do |n|
+  noified_user = User.all.min_by(&:created_at)
+  comments = noified_user.comments
+  Notification.create(visitor_id: User.all[n + 1].id, visited_id: noified_user.id, post_id: comments[n].post_id, comment_id: comments[n].id, action: "comment").save!
 end

@@ -8,6 +8,9 @@ Rails.application.routes.draw do
 
       resources :posts
       resources :comments
+      resources :notifications
+      # 既読
+      put "/notifications", to: "notifications#read"
     end
   end
 end
