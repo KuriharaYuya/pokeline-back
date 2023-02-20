@@ -10,16 +10,14 @@ module SessionHelper
       cookies["user_id"] = {
         value: user.id,
         max_age: 3600 * 24 * 7,
-        same_site: :lax,
         domain: "poke-line.vercel.app",
-      # secure: true,
+        secure: secure_cookies?,
       }
       cookies["logged_in"] = {
         value: true,
         max_age: 3600 * 24 * 7,
-        same_site: :lax,
         domain: "poke-line.vercel.app",
-      # secure: true,
+        secure: secure_cookies?,
       }
       true
     end
@@ -33,5 +31,11 @@ module SessionHelper
     if session[:user_id] != cookies[:user_id]
       render json: { message: "Unauthorized" }, status: :unauthorized
     end
+  end
+
+  private
+
+  def secure_cookies?
+    Rails.env.production?
   end
 end
