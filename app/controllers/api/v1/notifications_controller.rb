@@ -10,7 +10,9 @@ module Api
 
         # ユーザーに紐づいている通知を全件取得する
         # notifications = current_user.received_notifications.sort_by(&:created_at).reverse
-        notifications = current_user.received_notifications.includes(:comment, :visitor, :post).sort_by(&:created_at).reverse
+        per_page = 10
+        notifications = current_user.received_notifications.sort_by(&:created_at).reverse
+        notifications = paginate(notifications, params[:page].to_i + 1, per_page)
         # commentのuser.nameとuser.imgを含めて返す
         unchecks = current_user.received_notifications.where(checked: false).length
         notifications = notifications.map do |notification|
@@ -32,13 +34,22 @@ module Api
 
       def read
         # 通知を既読にすることpdate関数は関心を持つ
-
         # paramsには通知idを格納した配列が入っている
-        notification_ids = params[:notification_ids]
+        notification_ids = params[:notification][:notification_ids]
         notification_ids.each do |id|
           Notification.find(id).update(checked: true)
         end
         render status: :ok
+      end
+
+      private
+
+      def notification_params
+        params.permit(notification: { notification_ids: [] })
+      end
+
+      def paginate(array, page, per_page)
+        Kaminari.paginate_array(array).page(page).per(per_page)
       end
     end
   end
