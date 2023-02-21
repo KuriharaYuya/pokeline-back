@@ -23,7 +23,6 @@ module Api
         # ぺージネーションの実装
         posts = Kaminari.paginate_array(Post.includes(:user, :comments).sort_by(&:created_at).reverse).page(params[:page].to_i + 1).per(10)
         posts = posts.map do |post|
-          user = post.user
           # commentに対して、返却数を10に制限する
           # 一度ここで、コメントを取得して、その後に、mapで返却する
           comments = Kaminari.paginate_array(post.comments.includes(:user).sort_by(&:created_at)).page(1).per(10)
@@ -38,6 +37,7 @@ module Api
               user_img: user.picture
             }
           end
+          post_user = post.user
           {
             id: post.id,
             pokemon_name: post.pokemon_name,
@@ -46,9 +46,9 @@ module Api
             pokemon_image: post.pokemon_image,
             title: post.title,
             content: post.content,
-            user_img: user.picture,
-            user_id: user.id,
-            user_name: user.name,
+            user_img: post_user.picture,
+            user_id: post_user.id,
+            user_name: post_user.name,
             comments:,
             comments_length: post.comments.length
           }
