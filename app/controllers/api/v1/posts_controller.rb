@@ -3,8 +3,14 @@ module Api
     class PostsController < ApplicationController
       include SessionHelper
       before_action :authenticate_user
+      skip_before_action :authenticate_user, only: [:index]
 
       def create
+        unless current_user
+          render json: { error: "ログインしてください" }, status: :unauthorized
+          return
+        end
+
         post = current_user.posts.build(posts_params)
         if post.save
           render status: :ok
