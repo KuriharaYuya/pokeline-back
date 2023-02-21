@@ -3,6 +3,7 @@ module Api
     class CommentsController < ApplicationController
       include SessionHelper
       before_action :authenticate_user
+      skip_before_action :authenticate_user, only: [:index]
 
       def index
         comments = Comment.includes(:user).where(post_id: params[:post_id]).page(params[:page].to_i + 1).per(10)
@@ -21,6 +22,10 @@ module Api
       end
 
       def create
+        unless current_user
+          render json: { error: "ログインしてください" }, status: :unauthorized
+          return
+        end
         comment = current_user.comments.build(comments_params)
         if comment.save
           post = Post.find(comments_params["post_id"])

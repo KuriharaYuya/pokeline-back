@@ -68,6 +68,17 @@ module Api
         response_json = JSON.parse(response.body)
         assert_equal response_json["posts"].length, Post.all.length
       end
+
+      test "trying create post with guest user" do
+        # ログアウト
+        delete api_v1_sessions_path
+
+        # 投稿作成
+        assert_no_difference "Post.count" do
+          post api_v1_posts_path, params: { posts: { pokemon_name: "aa", version_name: "adada", pokemon_image: "afad", title: "", content: "" } }
+        end
+        assert_response :unauthorized
+      end
     end
   end
 end
