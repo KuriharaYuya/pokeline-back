@@ -12,7 +12,7 @@ module Api
         # notifications = current_user.received_notifications.sort_by(&:created_at).reverse
         per_page = 10
         notifications = current_user.received_notifications.sort_by(&:created_at).reverse
-        notifications = paginate(notifications, params[:page].to_i + 1, per_page)
+        notifications = paginate(notifications, params[:page].to_i, per_page)
         # commentのuser.nameとuser.imgを含めて返す
         unchecks = current_user.received_notifications.where(checked: false).length
         notifications = notifications.map do |notification|
