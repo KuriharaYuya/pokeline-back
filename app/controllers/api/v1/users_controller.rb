@@ -11,13 +11,13 @@ module Api
         user_info = JWT.decode(user_params[:access_token], nil, false).first
         name, email, user_id, picture = user_info.values_at("name", "email", "user_id", "picture")
 
-        user = User.new(name:, email:, id: user_id, picture: )
-        if user.save!
+        user = User.new(name:, email:, id: user_id, picture:)
+        if user.save
           login(user)
           render json: { user: }, status: :ok
         elsif User.find(user_id)
           # 複製しているならエラー出す
-          render json: { error: "ユーザーは既に存在します" }, status: :bad_request
+          render status: :bad_request
         end
       end
 
