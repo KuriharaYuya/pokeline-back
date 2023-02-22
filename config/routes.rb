@@ -11,6 +11,7 @@ Rails.application.routes.draw do
       resources :notifications
       # 既読
       put "/notifications", to: "notifications#read"
+      resources :articles
     end
   end
 end
