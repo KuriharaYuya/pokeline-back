@@ -20,7 +20,7 @@ class Api::V1::UsersControllerTest < ActionDispatch::IntegrationTest
   test "test failer with duplicated user" do
     post api_v1_users_path, params: { user: { access_token: @token } }
 
-    assert_raises ActiveRecord::RecordNotUnique do
+    assert_raise ActiveRecord::RecordInvalid do
       post api_v1_users_path, params: { user: { access_token: @token } }
     end
   end
