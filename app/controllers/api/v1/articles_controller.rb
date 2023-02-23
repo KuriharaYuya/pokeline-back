@@ -6,12 +6,18 @@ module Api
       before_action :authenticate_user, :admin?, only: [:create, :update, :destroy]
 
       def index
-        render json: { articles: "this is teet" }, status: :ok
+        articles = Article.all
+        render json: { articles: }, status: :ok
       end
 
       def create
         article = current_user.articles.new(article_params)
         render json: { article: }, status: :ok if article.save!
+      end
+
+      def show
+        article = Article.find(params[:id])
+        render json: { article: }, status: :ok
       end
 
       def update

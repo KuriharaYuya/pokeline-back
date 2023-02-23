@@ -11,10 +11,17 @@ module Api
                             admin: true }
         @admin_user = User.new(admin_user_info)
         @admin_user.save
+        normal_user_info = { name: "normal_user",
+                             email: "normal@normalmail.com",
+                             id: "iamnormaluser1234",
+                             picture: "https://test.picture.com/user_profile/normal.jpeg",
+                             admin: false }
+        @normal_user = User.new(normal_user_info)
+        @normal_user.save
+
         @admin_user_token = JWT.encode({ user_id: admin_user_info[:id] }, nil, "none")
         # login
-        cookies[:user_id] = @admin_user.id
-        post api_v1_sessions_path, params: { session: { access_token: @admin_user_token } }
+        sign_in_as(@admin_user)
       end
 
       test "admin user should be exist" do
@@ -62,6 +69,58 @@ module Api
         assert_difference "Article.count", -1 do
           delete api_v1_article_path(tgt_article.id)
         end
+      end
+      #   adminではないuserが投稿を作成できるのか？
+      test "non-admin user should not be able to create article" do
+        # normal_userでログイン
+        sign_in_as(@normal_user)
+
+        assert_difference "Article.count", 0 do
+          post api_v1_articles_path, params: { article: { title: "iamnormal", content: "ramen", genre: "dev" } }
+        end
+        assert_response :unauthorized
+        respone = JSON.parse(@response.body)
+        message = respone["message"]
+        assert_equal "admin以外は記事を作成できません", message
+      end
+      #   adminではないuserが投稿一覧をを見ることができるのか？
+      test "non-admin user should be able to see article list" do
+
+        ## adminが投稿を作成する
+        # adminでログイン
+        sign_in_as(@admin_user)
+
+        # 投稿を作成
+        test_title = "test_title"
+        post api_v1_articles_path, params: { article: { title: test_title, content: "ramenadmin", genre: "dev" } }
+
+        # normal_userでログイン
+        sign_in_as(@normal_user)
+
+        # indexにアクセス
+        get api_v1_articles_path
+        respone = JSON.parse(@response.body)
+        assert_response :ok
+        assert_equal Article.all.length, respone["articles"].count
+        assert_equal test_title, respone["articles"].first["title"]
+      end
+      # adminではないuserが投稿を見ることができるのか？
+      test "non-admin user should be able to see article" do
+        ## adminが投稿を作成する
+        # adminでログイン
+        sign_in_as(@admin_user)
+
+        # 投稿を作成
+        test_title = "test_title"
+        post api_v1_articles_path, params: { article: { title: test_title, content: "ramenadmin", genre: "dev" } }
+
+        # normal_userでログイン
+        sign_in_as(@normal_user)
+
+        get api_v1_article_path(@admin_user.articles.first.id)
+        assert_response :ok
+        respone = JSON.parse(@response.body)
+        assert_equal @admin_user.articles.first.title, respone["article"]["title"]
       end
     end
   end
