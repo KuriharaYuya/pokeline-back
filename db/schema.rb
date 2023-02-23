@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_22_090920) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_23_045114) do
   create_table "articles", id: :string, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "user_id"
     t.string "title"
@@ -18,6 +18,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_22_090920) do
     t.text "content"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "published", default: false
     t.index ["user_id"], name: "fk_rails_3d31dad1cc"
   end
 

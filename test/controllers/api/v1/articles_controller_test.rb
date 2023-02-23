@@ -48,18 +48,6 @@ module Api
         assert_equal article_info[:title], respone["article"]["title"]
       end
 
-      #   admingがarticleを編集してみる
-
-      test "admin user should be able to update article" do
-        new_article_info = { title: "new_test_title", content: "new_test_content", genre: "news" }
-        post api_v1_articles_path, params: { article: new_article_info }
-
-        assert_response :ok
-        respone = JSON.parse(@response.body)
-        # titleが一致しているか
-        assert_equal new_article_info[:title], respone["article"]["title"]
-      end
-
       #   admingがarticleを削除してみる
       test "admin user should be able to delete article" do
         new_article_info = { title: "new_test_title", content: "new_test_content", genre: "news" }
@@ -85,14 +73,16 @@ module Api
       end
       #   adminではないuserが投稿一覧をを見ることができるのか？
       test "non-admin user should be able to see article list" do
-
         ## adminが投稿を作成する
         # adminでログイン
         sign_in_as(@admin_user)
 
         # 投稿を作成
-        test_title = "test_title"
-        post api_v1_articles_path, params: { article: { title: test_title, content: "ramenadmin", genre: "dev" } }
+        published_title = "published_title"
+        unpublished_title = "unpublished_title"
+
+        post api_v1_articles_path, params: { article: { title: published_title, content: "ramenadmin", genre: "dev", published: true } }
+        post api_v1_articles_path, params: { article: { title: unpublished_title, content: "ramenadmin", genre: "dev" } }
 
         # normal_userでログイン
         sign_in_as(@normal_user)
@@ -101,26 +91,50 @@ module Api
         get api_v1_articles_path
         respone = JSON.parse(@response.body)
         assert_response :ok
-        assert_equal Article.all.length, respone["articles"].count
-        assert_equal test_title, respone["articles"].first["title"]
+        assert_equal Article.all.where(published: true).length, respone["articles"].count
+        # assert_equal published_title, respone["articles"].first["title"]
       end
       # adminではないuserが投稿を見ることができるのか？
-      test "non-admin user should be able to see article" do
+      # そしてそれはpublicな投稿のみであることを確認する
+      test "non-admin user should be able to see only published article" do
         ## adminが投稿を作成する
         # adminでログイン
         sign_in_as(@admin_user)
 
         # 投稿を作成
-        test_title = "test_title"
-        post api_v1_articles_path, params: { article: { title: test_title, content: "ramenadmin", genre: "dev" } }
+        published_title = "published_title"
+        unpublished_title = "unpublished_title"
+
+        post api_v1_articles_path, params: { article: { title: published_title, content: "ramenadmin", genre: "dev", published: true } }
+        post api_v1_articles_path, params: { article: { title: unpublished_title, content: "ramenadmin", genre: "dev" } }
 
         # normal_userでログイン
         sign_in_as(@normal_user)
 
-        get api_v1_article_path(@admin_user.articles.first.id)
+        published_article = Article.where(published: true).first
+        get api_v1_article_path(published_article.id)
         assert_response :ok
         respone = JSON.parse(@response.body)
-        assert_equal @admin_user.articles.first.title, respone["article"]["title"]
+        assert_equal published_article.title, respone["article"]["title"]
+
+        # adminではないuserが投稿されていない記事を見ることができないことを確認する
+        tgt_article = @admin_user.articles.where(published: false).first
+        get api_v1_article_path(tgt_article.id)
+        assert_response :unauthorized
+      end
+
+      # adminが記事の内容を編集できるのか？
+      test "admin user should be able to update article" do
+        # adimnでログイン
+        sign_in_as(@admin_user)
+        article_info = { title: "test_title", content: "test_content", genre: "dev" }
+        post api_v1_articles_path, params: { article: article_info }
+        respone = JSON.parse(@response.body)
+        tgt_article = Article.find(respone["article"]["id"])
+        updated_article_info = { title: "updated_title", content: "updated_content", genre: "news" }
+        put api_v1_article_path(tgt_article), params: { article: updated_article_info }
+        respone = JSON.parse(@response.body)
+        assert_equal updated_article_info[:title], respone["article"]["title"]
       end
     end
   end

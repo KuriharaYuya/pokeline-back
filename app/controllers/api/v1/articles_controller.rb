@@ -6,7 +6,7 @@ module Api
       before_action :authenticate_user, :admin?, only: [:create, :update, :destroy]
 
       def index
-        articles = Article.all
+        articles = Article.all.where(published: true)
         render json: { articles: }, status: :ok
       end
 
@@ -17,7 +17,15 @@ module Api
 
       def show
         article = Article.find(params[:id])
-        render json: { article: }, status: :ok
+        # adminであれば公開していなくてもみることができる
+
+        if article.published
+          render json: { article: }, status: :ok
+        elsif current_user.admin?
+          render json: { article: }, status: :ok
+        else
+          render json: { message: "記事が公開されていません" }, status: :unauthorized
+        end
       end
 
       def update
@@ -34,7 +42,7 @@ module Api
       private
 
       def article_params
-        params.require(:article).permit(:post_id, :title, :content, :genre)
+        params.require(:article).permit(:post_id, :title, :content, :genre, :published)
       end
     end
   end
