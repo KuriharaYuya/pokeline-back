@@ -71,6 +71,25 @@ module Api
         message = respone["message"]
         assert_equal "admin以外は記事を作成できません", message
       end
+
+      # adminではないuserが投稿を削除できるのか？
+      test "non-admin user should not be able to delete article" do
+        article_info = { title: "test_title", content: "test_content", genre: "dev" }
+        # login
+        sign_in_as(@admin_user)
+        post api_v1_articles_path, params: { article: article_info }
+
+        # normal_userでログイン
+        sign_in_as(@normal_user)
+        tgt_article = Article.all.first
+        assert_difference "Article.count", 0 do
+          delete api_v1_article_path(tgt_article.id)
+        end
+        assert_response :unauthorized
+        respone = JSON.parse(@response.body)
+        message = respone["message"]
+        assert_equal "あなたが作成していない記事を削除することはできません。", message
+      end
       #   adminではないuserが投稿一覧をを見ることができるのか？
       test "non-admin user should be able to see article list" do
         ## adminが投稿を作成する

@@ -3,7 +3,7 @@ module Api
     class ArticlesController < ApplicationController
       include SessionHelper
       # admin以外は記事を作成 & 編集できないようにする
-      before_action :authenticate_user, :admin?, only: [:create, :update, :destroy]
+      before_action :authenticate_user, :admin?, only: [:create, :update]
 
       def index
         articles = Article.all.where(published: true)
@@ -35,7 +35,12 @@ module Api
       end
 
       def destroy
-        article = current_user.articles.find(params[:id])
+        article = Article.all.find(params[:id])
+        unless current_user.admin? && article.user_id == current_user.id
+          render json: { message: "あなたが作成していない記事を削除することはできません。" }, status: :unauthorized
+          return
+        end
+
         render status: :ok if article.destroy!
       end
 
