@@ -35,4 +35,10 @@ module SessionHelper
       render json: { message: "anauthorized" }, status: :unauthorized
     end
   end
+
+  def admin?
+    unless current_user.admin == true
+      render json: { message: "admin以外は記事を作成できません" }, status: :unauthorized
+    end
+  end
 end

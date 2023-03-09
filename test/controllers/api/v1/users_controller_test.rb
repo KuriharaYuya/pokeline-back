@@ -4,7 +4,7 @@ class Api::V1::UsersControllerTest < ActionDispatch::IntegrationTest
   def setup
     @valid_user = { name: "test_user",
                     email: "test@testmail.com",
-                    user_id: "itinisanshi1234",
+                    user_id: "itinisanshi1234ada",
                     picture: "https://test.picture.com/user_profile/test.jpeg" }
     @token = JWT.encode(@valid_user, nil, "none")
   end
@@ -17,10 +17,9 @@ class Api::V1::UsersControllerTest < ActionDispatch::IntegrationTest
     assert_equal @valid_user[:name], JSON.parse(response.body)["user"]["name"]
   end
 
-  test "test failer with duplicated user" do
+  test "test failure with duplicated user" do
     post api_v1_users_path, params: { user: { access_token: @token } }
-
-    assert_raise ActiveRecord::RecordInvalid do
+    assert_no_difference "User.count" do
       post api_v1_users_path, params: { user: { access_token: @token } }
     end
   end
