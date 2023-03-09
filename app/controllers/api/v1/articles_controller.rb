@@ -6,7 +6,11 @@ module Api
       before_action :authenticate_user, :admin?, only: [:create, :update]
 
       def index
-        articles = Article.all.where(published: true)
+        articles = if !current_user.nil? && current_user.admin
+                     Article.all
+                   else
+                     Article.all.where(published: true)
+                   end
         render json: { articles: }, status: :ok
       end
 
@@ -30,6 +34,8 @@ module Api
 
       def update
         article = current_user.articles.find(params[:id])
+        # imgを確認する
+        p article_params[:img]
         article.update!(article_params)
         render json: { article: }, status: :ok
       end
@@ -47,7 +53,7 @@ module Api
       private
 
       def article_params
-        params.require(:article).permit(:post_id, :title, :content, :genre, :published)
+        params.require(:article).permit(:title, :content, :genre, :published, :img)
       end
     end
   end

@@ -3,7 +3,7 @@ class Article < ApplicationRecord
   belongs_to :user
 
   validates :title, presence: true, length: { maximum: 30 }
-  validates :content, presence: true
+  validates :img, presence: true
   validate :admin_user
 
   private

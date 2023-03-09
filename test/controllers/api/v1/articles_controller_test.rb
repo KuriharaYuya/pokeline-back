@@ -38,7 +38,7 @@ module Api
 
       # adminがarticleを作成してみる
       test "admin user should be able to create article" do
-        article_info = { title: "test_title", content: "test_content", genre: "dev" }
+        article_info = { title: "test_title", content: "test_content", genre: "dev", img: "adadadadadad" }
         assert_difference "Article.count", 1 do
           post api_v1_articles_path, params: { article: article_info }
         end
@@ -50,7 +50,7 @@ module Api
 
       #   admingがarticleを削除してみる
       test "admin user should be able to delete article" do
-        new_article_info = { title: "new_test_title", content: "new_test_content", genre: "news" }
+        new_article_info = { title: "new_test_title", content: "new_test_content", genre: "news", img: "adadadadadad" }
         post api_v1_articles_path, params: { article: new_article_info }
 
         tgt_article = @admin_user.articles.first
@@ -64,7 +64,7 @@ module Api
         sign_in_as(@normal_user)
 
         assert_difference "Article.count", 0 do
-          post api_v1_articles_path, params: { article: { title: "iamnormal", content: "ramen", genre: "dev" } }
+          post api_v1_articles_path, params: { article: { title: "iamnormal", content: "ramen", genre: "dev", img: "adadadadadad" } }
         end
         assert_response :unauthorized
         respone = JSON.parse(@response.body)
@@ -74,7 +74,7 @@ module Api
 
       # adminではないuserが投稿を削除できるのか？
       test "non-admin user should not be able to delete article" do
-        article_info = { title: "test_title", content: "test_content", genre: "dev" }
+        article_info = { title: "test_title", content: "test_content", genre: "dev", img: "adadadadadad" }
         # login
         sign_in_as(@admin_user)
         post api_v1_articles_path, params: { article: article_info }
@@ -100,8 +100,8 @@ module Api
         published_title = "published_title"
         unpublished_title = "unpublished_title"
 
-        post api_v1_articles_path, params: { article: { title: published_title, content: "ramenadmin", genre: "dev", published: true } }
-        post api_v1_articles_path, params: { article: { title: unpublished_title, content: "ramenadmin", genre: "dev" } }
+        post api_v1_articles_path, params: { article: { title: published_title, content: "ramenadmin", genre: "dev", published: true, img: "adadadadadad" } }
+        post api_v1_articles_path, params: { article: { title: unpublished_title, content: "ramenadmin", genre: "dev", img: "adadadadadad" } }
 
         # normal_userでログイン
         sign_in_as(@normal_user)
@@ -124,8 +124,8 @@ module Api
         published_title = "published_title"
         unpublished_title = "unpublished_title"
 
-        post api_v1_articles_path, params: { article: { title: published_title, content: "ramenadmin", genre: "dev", published: true } }
-        post api_v1_articles_path, params: { article: { title: unpublished_title, content: "ramenadmin", genre: "dev" } }
+        post api_v1_articles_path, params: { article: { title: published_title, content: "ramenadmin", genre: "dev", published: true, img: "adadadadadad" } }
+        post api_v1_articles_path, params: { article: { title: unpublished_title, content: "ramenadmin", genre: "dev", img: "adadadadadad" } }
 
         # normal_userでログイン
         sign_in_as(@normal_user)
@@ -146,7 +146,7 @@ module Api
       test "admin user should be able to update article" do
         # adimnでログイン
         sign_in_as(@admin_user)
-        article_info = { title: "test_title", content: "test_content", genre: "dev" }
+        article_info = { title: "test_title", content: "test_content", genre: "dev", img: "adadadadadad" }
         post api_v1_articles_path, params: { article: article_info }
         respone = JSON.parse(@response.body)
         tgt_article = Article.find(respone["article"]["id"])
