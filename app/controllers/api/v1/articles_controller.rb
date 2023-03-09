@@ -34,8 +34,6 @@ module Api
 
       def update
         article = current_user.articles.find(params[:id])
-        # imgを確認する
-        p article_params[:img]
         article.update!(article_params)
         render json: { article: }, status: :ok
       end
