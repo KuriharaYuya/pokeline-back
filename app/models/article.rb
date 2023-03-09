@@ -9,7 +9,7 @@ class Article < ApplicationRecord
   private
 
   def admin_user
-    return errors.add(:base, "admin以外は記事を作成できません") unless user.admin?
+    return errors.add(:base, "admin以外は記事を作成できません") unless user.admin
 
     true
   end
